@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Logs (This hides those .run-auth.log files!)
+*.log
+.run-*.log
+
+# Build outputs
+dist/
+build/
+
+# OS files
+.DS_Store
