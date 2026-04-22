@@ -13,4 +13,6 @@ build/
 .DS_Store
 
 # envs variables
-.envs
+..env
+.env.*
+services/*/.env
