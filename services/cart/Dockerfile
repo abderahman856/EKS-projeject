@@ -11,7 +11,6 @@ COPY . .
 RUN npm run build
 
 FROM node:18-alpine
-
 WORKDIR /app
 
 RUN adduser -D abdurahman

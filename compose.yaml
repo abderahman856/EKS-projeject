@@ -1,0 +1,127 @@
+version: '3.8'
+
+x-service-base: &service-base
+  restart: unless-stopped
+  networks:
+    - backend-net
+  environment:
+    RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+
+services:
+  gateway:
+    image: nginx:alpine
+    restart: unless-stopped 
+    ports:
+      - "80:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth
+      - cart
+      - order
+      - payment
+      - product
+      - notification
+    networks:
+      - backend-net
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq 
+    networks:
+      - backend-net
+
+  auth-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER} -d auth_db"]
+      interval: 5s
+    networks:
+      - backend-net
+
+  auth:
+    <<: *service-base
+    build: ./services/auth
+    depends_on:
+      auth-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy 
+    environment:
+      # We add to the existing env from the template
+      DATABASE_URL: postgres://${AUTH_DB_USER}:${AUTH_DB_PASSWORD}@auth-db:5432/auth_db
+
+  order-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: ${ORDER_DB_USER}
+      POSTGRES_PASSWORD: ${ORDER_DB_PASSWORD}
+    volumes:
+      - order_db_data:/var/lib/postgresql/data 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ORDER_DB_USER} -d order_db"]
+      interval: 5s
+    networks:
+      - backend-net
+
+  order:
+    <<: *service-base
+    build: ./services/order
+    depends_on:
+      order-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${ORDER_DB_USER}:${ORDER_DB_PASSWORD}@order-db:5432/order_db
+
+  notification:
+    <<: *service-base
+    build: ./services/notification
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  cart:
+    <<: *service-base
+    build: ./services/cart
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  payment:
+    <<: *service-base
+    build: ./services/payment
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  product:
+    <<: *service-base
+    build: ./services/product
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+networks:
+  backend-net:
+    driver: bridge
+
+volumes:
+  auth_db_data:
+  order_db_data:
+  rabbitmq_data:
