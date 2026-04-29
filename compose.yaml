@@ -6,22 +6,17 @@ x-service-base: &service-base
     - backend-net
   environment:
     RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    DB_USER: ${DB_USER}
+    DB_PASSWORD: ${DB_PASSWORD}
+    RDS_ENDPOINT: ${RDS_ENDPOINT} 
 
 services:
-  gateway:
-    image: nginx:alpine
-    restart: unless-stopped 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile     
     ports:
-      - "80:80"
-    volumes:
-      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - auth
-      - cart
-      - order
-      - payment
-      - product
-      - notification
+      - "3000:80"                
     networks:
       - backend-net
 
@@ -31,23 +26,6 @@ services:
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "check_running"]
       interval: 10s
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq 
-    networks:
-      - backend-net
-
-  auth-db:
-    image: postgres:15-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: auth_db
-      POSTGRES_USER: ${AUTH_DB_USER}
-      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
-    volumes:
-      - auth_db_data:/var/lib/postgresql/data 
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER} -d auth_db"]
-      interval: 5s
     networks:
       - backend-net
 
@@ -55,39 +33,19 @@ services:
     <<: *service-base
     build: ./services/auth
     depends_on:
-      auth-db:
-        condition: service_healthy
       rabbitmq:
         condition: service_healthy 
     environment:
-      # We add to the existing env from the template
-      DATABASE_URL: postgres://${AUTH_DB_USER}:${AUTH_DB_PASSWORD}@auth-db:5432/auth_db
-
-  order-db:
-    image: postgres:15-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: order_db
-      POSTGRES_USER: ${ORDER_DB_USER}
-      POSTGRES_PASSWORD: ${ORDER_DB_PASSWORD}
-    volumes:
-      - order_db_data:/var/lib/postgresql/data 
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${ORDER_DB_USER} -d order_db"]
-      interval: 5s
-    networks:
-      - backend-net
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@${RDS_ENDPOINT}:5432/auth_db
 
   order:
     <<: *service-base
     build: ./services/order
     depends_on:
-      order-db:
-        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgres://${ORDER_DB_USER}:${ORDER_DB_PASSWORD}@order-db:5432/order_db
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@${RDS_ENDPOINT}:5432/order_db
 
   notification:
     <<: *service-base
@@ -99,29 +57,15 @@ services:
   cart:
     <<: *service-base
     build: ./services/cart
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
 
   payment:
     <<: *service-base
     build: ./services/payment
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
 
   product:
     <<: *service-base
     build: ./services/product
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
 
 networks:
   backend-net:
     driver: bridge
-
-volumes:
-  auth_db_data:
-  order_db_data:
-  rabbitmq_data:
