@@ -1,0 +1,36 @@
+apiVersion: v2
+name: ecommerce-app
+Description: A root helm chart for the 7-service ecommerce application
+type: application
+
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: auth
+    version: 0.1.0
+    repository: "file://../charts/auth"
+  
+  - name: cart
+    version: 0.1.0
+    repository: "file://../chart/cart"
+  
+  - name: notification
+    version: 0.1.0
+    repository: "file://../chart/notification"
+
+  - name: order
+    version: 0.1.0
+    repository: "file://../chart/order"
+
+  - name: payment
+    version: 0.1.0
+    repository: "file://../charts/payment"
+
+  - name: shipping
+    version: 0.1.0
+    repository: "file://../charts/shipping"
+    
+  - name: frontend
+    version: 0.1.0
+    repository: "file://../charts/frontend"
