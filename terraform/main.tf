@@ -32,3 +32,23 @@ module "rds" {
   db_username        = var.db_username
   db_password        = var.db_password
 }
+
+module "ecr_repositories" {
+  source = "./modules/ecr"  # Path to the folder containing the 3 files we just made
+
+  # Passing variables to the module
+  ecr_repo_list = [
+    "auth",
+    "cart",
+    "orders",
+    "shipping",
+    "catalog",
+    "payment",
+    "frontend"
+  ]
+
+  tags = {
+    Environment = "Production"
+    Project     = "Ecommerce-Microservices"
+  }
+}
