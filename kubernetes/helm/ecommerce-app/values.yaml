@@ -1,0 +1,76 @@
+# --- GLOBAL SETTINGS ---
+global:
+  registry: 123456789.dkr.ecr.us-east-1.amazonaws.com
+  tag: "latest"
+  # Default resources for ALL services if they don't define their own
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# --- INDEPENDENT SERVICE OVERRIDES ---
+frontend:
+  replicaCount: 3
+  image:
+    repository: "ecommerce-frontend"
+  service:
+    port: 80
+  # Frontend needs more memory for rendering/assets
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+auth:
+  replicaCount: 2
+  image:
+    repository: "ecommerce-auth"
+  service:
+    port: 8080
+  # Inherits global defaults (no resources block needed here)
+
+cart:
+  replicaCount: 1
+  image:
+    repository: "ecommerce-cart"
+  service:
+    port: 8081
+
+notification:
+  replicaCount: 1
+  image:
+    repository: "ecommerce-notification"
+  service:
+    port: 8082
+
+order:
+  replicaCount: 1
+  image:
+    repository: "ecommerce-order"
+  service:
+    port: 8083
+
+payment:
+  replicaCount: 1
+  image:
+    repository: "ecommerce-payment"
+  service:
+    port: 8084
+  # Critical service gets guaranteed CPU
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+product:
+  replicaCount: 2
+  image:
+    repository: "ecommerce-product"
+  service:
+    port: 8085
