@@ -1,11 +1,20 @@
-replicaCount: 2
+env: "development"
+awsRegion: "us-east-1"
+
+databaseHost: "ecommercemain.c6nao6eycmq2.us-east-1.rds.amazonaws.com"
+databasePort: 5432
+
+replicaCount: 1
 
 image: 
-  repository: "auth-service-default"
+  registry: 723580626973.dkr.ecr.us-east-1.amazonaws.com
+  repository: auth-service
+  tag: latest
+  awsRegion: "us-east-1"
 
 service:
   type: ClusterIP
-  port: 8080
+  port: 3000
 
 secrets:
   dbPassword: "" 

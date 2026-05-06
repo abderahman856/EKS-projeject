@@ -36,12 +36,10 @@ resource "aws_db_instance" "main" {
   allocated_storage    = 20
   db_name              = var.db_name 
   engine               = "postgres"
-  engine_version       = "16.1"
+  engine_version       = "16.3"
   instance_class       = "db.t3.micro"
   username             = var.db_username
   
-  # --- UPDATED FOR MANUAL PASSWORD ---
-  manage_master_user_password = false 
   password                    = var.dbPassword # This pulls from your .tfvars
 
   db_subnet_group_name   = aws_db_subnet_group.main.name
