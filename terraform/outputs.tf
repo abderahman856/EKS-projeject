@@ -1,7 +1,3 @@
-output "ecr_urls" {
-  value = module.ecr_repositories.repository_urls
-}
-
 output "eks_cluster_endpoint" {
   value = module.eks.cluster_endpoint
 }

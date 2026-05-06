@@ -6,3 +6,8 @@ output "rds_endpoint" {
 output "db_name" {
   value = aws_db_instance.main.db_name
 }
+
+output "rds_port" {
+  description = "The port the database is listening on"
+  value       = aws_db_instance.main.port
+}

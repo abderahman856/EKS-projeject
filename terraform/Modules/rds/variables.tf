@@ -17,7 +17,7 @@ variable "eks_sg_id" {
 
 variable "db_name" {
   type    = string
-  default = "ecommerce_main"
+  default = "ecommercemain"
 }
 
 variable "db_username" {

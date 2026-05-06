@@ -22,3 +22,7 @@ services/*/.env
 .terraform/
 *.tfvars
 secrets.auto.tfvars
+
+my-secrets.yaml
+
+

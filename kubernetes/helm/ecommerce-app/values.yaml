@@ -21,7 +21,7 @@ aws:
 
 # --- INDEPENDENT SERVICE OVERRIDES ---
 frontend:
-  replicaCount: 3
+  replicaCount: 1
   image:
     repository: "ecommerce-frontend"
   service:
@@ -35,7 +35,7 @@ frontend:
       memory: 512Mi
 
 auth:
-  replicaCount: 2
+  replicaCount: 1
   image:
     repository: "ecommerce-auth"
   service:
@@ -85,7 +85,7 @@ payment:
       memory: 256Mi
 
 product:
-  replicaCount: 2
+  replicaCount: 1
   image:
     repository: "ecommerce-product"
   service:
