@@ -1,3 +1,8 @@
+variable "project_name" {
+  type    = string
+  default = "ecommerce-app"
+}
+
 variable "vpc_id" {
   type = string
 }
@@ -12,14 +17,21 @@ variable "eks_sg_id" {
 
 variable "db_name" {
   type    = string
-  default = "ecommerce_orders"
+  default = "ecommerce_main"
 }
 
 variable "db_username" {
-  type = string
+  type    = string
+  default = "dbadmin"
 }
 
-variable "db_password" {
+# --- NEW VARIABLES FOR SECRETS ---
+variable "dbPassword" {
+  type      = string
+  sensitive = true
+}
+
+variable "jwtSecret" {
   type      = string
   sensitive = true
 }

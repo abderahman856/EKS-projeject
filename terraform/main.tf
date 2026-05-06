@@ -15,6 +15,18 @@ module "iam" {
   node_group_role_name  = var.node_group_role_name
 }
 
+module "rds" {
+  source             = "./Modules/rds"
+  vpc_id             = module.vpc.vpc_id
+  private_subnet_ids = [module.vpc.private_subnet_1_id, module.vpc.private_subnet_2_id]
+  eks_sg_id          = module.eks.cluster_security_group_id
+  
+  # Ensure these variable names match exactly what we put in variables.tf
+  db_username        = var.db_username
+  dbPassword         = var.dbPassword
+  jwtSecret          = var.jwtSecret # Passing this down in case the module needs it
+}
+
 module "eks" {
   source           = "./Modules/eks"
   cluster_role_arn = module.iam.eks_cluster_role_arn
@@ -23,32 +35,3 @@ module "eks" {
   subnet_ids       = [module.vpc.private_subnet_1_id, module.vpc.private_subnet_2_id]
 }
 
-module "rds" {
-  source             = "./Modules/rds"
-  vpc_id             = module.vpc.vpc_id
-  private_subnet_ids = [module.vpc.private_subnet_1_id, module.vpc.private_subnet_2_id]
-  eks_sg_id          = module.eks.cluster_security_group_id
-  
-  db_username        = var.db_username
-  db_password        = var.db_password
-}
-
-module "ecr_repositories" {
-  source = "./modules/ecr"  # Path to the folder containing the 3 files we just made
-
-  # Passing variables to the module
-  ecr_repo_list = [
-    "auth",
-    "cart",
-    "orders",
-    "shipping",
-    "catalog",
-    "payment",
-    "frontend"
-  ]
-
-  tags = {
-    Environment = "Production"
-    Project     = "Ecommerce-Microservices"
-  }
-}

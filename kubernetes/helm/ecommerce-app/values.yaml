@@ -2,7 +2,7 @@
 global:
   registry: 123456789.dkr.ecr.us-east-1.amazonaws.com
   tag: "latest"
-  # Default resources for ALL services if they don't define their own
+  awsRegion: "us-east-1"
   resources:
     requests:
       cpu: 100m
@@ -11,6 +11,14 @@ global:
       cpu: 200m
       memory: 256Mi
 
+# --- EXTERNAL SECRETS CONFIG ---
+# This section is required for your ClusterSecretStore template
+eso:
+  namespace: "external-secrets"
+  serviceAccountName: "external-secrets"
+aws:
+  region: "us-east-1"
+
 # --- INDEPENDENT SERVICE OVERRIDES ---
 frontend:
   replicaCount: 3
@@ -18,7 +26,6 @@ frontend:
     repository: "ecommerce-frontend"
   service:
     port: 80
-  # Frontend needs more memory for rendering/assets
   resources:
     requests:
       cpu: 200m
@@ -32,8 +39,12 @@ auth:
   image:
     repository: "ecommerce-auth"
   service:
+    type: ClusterIP
     port: 8080
-  # Inherits global defaults (no resources block needed here)
+  # --- ADDED FOR ESO ---
+  secrets:
+    rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
+    jwtSecret: "a-long-random-32-character-string"
 
 cart:
   replicaCount: 1
@@ -41,6 +52,9 @@ cart:
     repository: "ecommerce-cart"
   service:
     port: 8081
+  # --- ADDED FOR ESO ---
+  secrets:
+    rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
 
 notification:
   replicaCount: 1
@@ -55,6 +69,9 @@ order:
     repository: "ecommerce-order"
   service:
     port: 8083
+  # --- ADDED FOR ESO ---
+  secrets:
+    rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
 
 payment:
   replicaCount: 1
@@ -62,7 +79,6 @@ payment:
     repository: "ecommerce-payment"
   service:
     port: 8084
-  # Critical service gets guaranteed CPU
   resources:
     requests:
       cpu: 250m

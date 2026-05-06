@@ -1,0 +1,14 @@
+replicaCount: 2
+
+image: 
+  repository: "auth-service-default"
+
+service:
+  type: ClusterIP
+  port: 8080
+
+secrets:
+  dbPassword: "" 
+  jwtSecret: ""
+
+Resources: {}

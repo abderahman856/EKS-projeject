@@ -5,8 +5,8 @@ variable "ecr_repo_list" {
     "auth",
     "cart",
     "orders",
-    "shipping",
-    "catalog",
+    "product",
+    "notification",
     "payment",
     "frontend"
   ]

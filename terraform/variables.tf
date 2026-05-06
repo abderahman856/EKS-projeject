@@ -33,12 +33,17 @@ variable "node_group_role_name" {
   default     = "eks-node-group-role"
 }
 
-variable "db_username" {
+variable "dbPassword" {
   type      = string
   sensitive = true
 }
 
-variable "db_password" {
+variable "jwtSecret" {
   type      = string
   sensitive = true
+}
+
+variable "db_username" {
+  type    = string
+  default = "dbadmin"
 }
