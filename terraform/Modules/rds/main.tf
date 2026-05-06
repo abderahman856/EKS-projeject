@@ -1,6 +1,6 @@
-# 1. DB Subnet Group - Tells RDS which subnets to use
+# 1. DB Subnet Group
 resource "aws_db_subnet_group" "main" {
-  name       = "${var.db_name}-subnet-group"
+  name       = "${var.project_name}-rds-subnet-group"
   subnet_ids = var.private_subnet_ids
 
   tags = {
@@ -8,9 +8,9 @@ resource "aws_db_subnet_group" "main" {
   }
 }
 
-# 2. RDS Security Group - The "Firewall"
+# 2. RDS Security Group
 resource "aws_security_group" "rds_sg" {
-  name        = "rds-security-group"
+  name        = "${var.project_name}-rds-sg"
   description = "Allow inbound traffic from EKS"
   vpc_id      = var.vpc_id
 
@@ -19,7 +19,7 @@ resource "aws_security_group" "rds_sg" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [var.eks_sg_id] # Only allows your EKS cluster to talk to it
+    security_groups = [var.eks_sg_id]
   }
 
   egress {
@@ -32,16 +32,22 @@ resource "aws_security_group" "rds_sg" {
 
 # 3. The RDS Instance
 resource "aws_db_instance" "main" {
-  allocated_storage      = 20
-  db_name                = var.db_name
-  engine                 = "postgres"
-  engine_version         = "16.1"
-  instance_class         = "db.t3.micro" # Free Tier eligible
-  username               = var.db_username
-  password               = var.db_password
+  identifier           = var.db_name
+  allocated_storage    = 20
+  db_name              = var.db_name 
+  engine               = "postgres"
+  engine_version       = "16.1"
+  instance_class       = "db.t3.micro"
+  username             = var.db_username
+  
+  # --- UPDATED FOR MANUAL PASSWORD ---
+  manage_master_user_password = false 
+  password                    = var.dbPassword # This pulls from your .tfvars
+
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-  skip_final_snapshot    = true # Only for practice; use false in production
+  
+  skip_final_snapshot    = true
   publicly_accessible    = false
   storage_type           = "gp2"
 }

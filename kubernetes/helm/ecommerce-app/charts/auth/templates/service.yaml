@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # This sets the internal DNS name. Other services call this as http://auth
+  name: {{ .Chart.Name }} 
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  # ClusterIP means it is only reachable from INSIDE the cluster (secure)
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.service.port | default 8080 }}
+      targetPort: {{ .Values.service.port | default 8080 }}
+      protocol: TCP
+      name: http
+  selector:
+    # This MUST match the labels in your deployment.yaml exactly
+    app: {{ .Chart.Name }}
