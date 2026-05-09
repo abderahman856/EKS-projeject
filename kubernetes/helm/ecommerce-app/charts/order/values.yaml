@@ -1,0 +1,22 @@
+env: "production"
+awsRegion: "us-east-1"
+replicaCount: 1
+
+image:
+  registry: 723580626973.dkr.ecr.us-east-1.amazonaws.com
+  repository: order-service
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 8083
+
+database:
+  host: "postgres.default.svc.cluster.local"
+  port: 5432
+
+secrets:
+  dbPassword: ""
+  dbName: ""
+
+resources: {}

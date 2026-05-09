@@ -1,0 +1,14 @@
+env: "production"
+awsRegion: "us-east-1"
+replicaCount: 1
+
+image:
+  registry: 723580626973.dkr.ecr.us-east-1.amazonaws.com
+  repository: cart-service
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 8081
+
+resources: {}

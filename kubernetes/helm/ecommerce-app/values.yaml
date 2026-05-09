@@ -1,75 +1,97 @@
-# --- GLOBAL SETTINGS ---
 global:
-  registry: 123456789.dkr.ecr.us-east-1.amazonaws.com
+  registry: "723580626973.dkr.ecr.us-east-1.amazonaws.com"
   tag: "latest"
   awsRegion: "us-east-1"
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 200m
-      memory: 256Mi
+  env: "production"
+  ingress:
+    enabled: true
+    className: "alb"
+    host: "ecommerce.local"
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+  sharedEnv:
+    LOG_LEVEL: "info"
+    AUTH_API_URL: "http://auth:8080"
+    CART_API_URL: "http://cart:8081"
+    NOTIFICATION_API_URL: "http://notification:8082"
+    ORDER_API_URL: "http://order:8083"
+    PAYMENT_API_URL: "http://payment:8084"
+    PRODUCT_API_URL: "http://product:8085"
 
-# --- EXTERNAL SECRETS CONFIG ---
-# This section is required for your ClusterSecretStore template
-eso:
-  namespace: "external-secrets"
-  serviceAccountName: "external-secrets"
-aws:
-  region: "us-east-1"
-
-# --- INDEPENDENT SERVICE OVERRIDES ---
 frontend:
   replicaCount: 1
   image:
-    repository: "ecommerce-frontend"
+    repository: "frontend-service"
   service:
+    type: ClusterIP
     port: 80
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
+  resources: {}
 
 auth:
   replicaCount: 1
   image:
-    repository: "ecommerce-auth"
+    repository: "auth-service"
   service:
     type: ClusterIP
     port: 8080
-  # --- ADDED FOR ESO ---
-  secrets:
-    rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
-    jwtSecret: "a-long-random-32-character-string"
+  resources: {}
 
 cart:
   replicaCount: 1
   image:
-    repository: "ecommerce-cart"
+    repository: "cart-service"
   service:
+    type: ClusterIP
     port: 8081
-  # --- ADDED FOR ESO ---
-  secrets:
-    rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
+  resources: {}
 
 notification:
   replicaCount: 1
   image:
-    repository: "ecommerce-notification"
+    repository: "notification-service"
   service:
+    type: ClusterIP
     port: 8082
+  resources: {}
 
 order:
   replicaCount: 1
   image:
-    repository: "ecommerce-order"
+    repository: "order-service"
   service:
+    type: ClusterIP
     port: 8083
-  # --- ADDED FOR ESO ---
+  database:
+    host: "postgres.default.svc.cluster.local"
+    port: 5432
+  secrets:
+    create: true
+    dbUser: "postgres"
+    dbPassword: "postgres"
+    dbName: "order_db"
+  resources: {}
+
+payment:
+  replicaCount: 1
+  image:
+    repository: "payment-service"
+  service:
+    type: ClusterIP
+    port: 8084
+  resources: {}
+
+product:
+  replicaCount: 1
+  image:
+    repository: "product-service"
+  service:
+    type: ClusterIP
+    port: 8085
+  externalApi: "https://dummyjson.com"
+  resources: {}
+
   secrets:
     rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
 

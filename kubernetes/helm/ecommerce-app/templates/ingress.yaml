@@ -1,0 +1,67 @@
+{{- if .Values.global.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecommerce-ingress
+  labels:
+    app.kubernetes.io/name: ecommerce-app
+  annotations:
+    {{- range $k, $v := .Values.global.ingress.annotations }}
+    {{ $k }}: {{ $v | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.global.ingress.className | quote }}
+  rules:
+    - host: {{ .Values.global.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: {{ .Values.frontend.service.port }}
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth
+                port:
+                  number: {{ .Values.auth.service.port }}
+          - path: /api/cart
+            pathType: Prefix
+            backend:
+              service:
+                name: cart
+                port:
+                  number: {{ .Values.cart.service.port }}
+          - path: /api/order
+            pathType: Prefix
+            backend:
+              service:
+                name: order
+                port:
+                  number: {{ .Values.order.service.port }}
+          - path: /api/payment
+            pathType: Prefix
+            backend:
+              service:
+                name: payment
+                port:
+                  number: {{ .Values.payment.service.port }}
+          - path: /api/product
+            pathType: Prefix
+            backend:
+              service:
+                name: product
+                port:
+                  number: {{ .Values.product.service.port }}
+          - path: /api/notification
+            pathType: Prefix
+            backend:
+              service:
+                name: notification
+                port:
+                  number: {{ .Values.notification.service.port }}
+{{- end }}

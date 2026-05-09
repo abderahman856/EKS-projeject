@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:   
+metadata:
   name: {{ .Chart.Name }}
   labels:
     app: {{ .Chart.Name }}
@@ -16,27 +16,24 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.registry | default .Values.global.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.tag }}"
           ports:
             - containerPort: {{ .Values.service.port }}
           
-          # We use envFrom for the ConfigMap to get all non-sensitive variables
+          # Loading non-sensitive data from both service-specific and global ConfigMaps
           envFrom:
             - configMapRef:
                 name: {{ .Chart.Name }}-config
+            - configMapRef:
+                name: shared-global-config
           
-          # We use 'env' for the Secret to pull specific keys from the Root Secret
+          # Pulling the specific Order DB password from the root secrets file
           env:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: ecommerce-global-secrets
-                  key: AUTH_DB_PASSWORD
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: ecommerce-global-secrets
-                  key: JWT_SECRET_KEY
+                  key: ORDER_DB_PASSWORD
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
