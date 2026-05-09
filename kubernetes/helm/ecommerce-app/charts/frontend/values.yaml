@@ -1,0 +1,15 @@
+env: "production"
+awsRegion: "us-east-1"
+
+replicaCount: 1
+
+image:
+  registry: ""
+  repository: frontend-service
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}

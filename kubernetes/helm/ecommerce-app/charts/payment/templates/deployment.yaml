@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:   
+metadata:
   name: {{ .Chart.Name }}
   labels:
     app: {{ .Chart.Name }}
@@ -16,18 +16,13 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.registry | default .Values.global.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.tag }}"
           ports:
             - containerPort: {{ .Values.service.port }}
-          
-          # This is correct for ESO. 
-          # ESO will create a secret named "{{ .Chart.Name }}-secrets" 
-          # which contains DB_PASSWORD and JWT_SECRET.
           envFrom:
             - configMapRef:
                 name: {{ .Chart.Name }}-config
-            - secretRef: 
-                name: {{ .Chart.Name }}-secrets
-
+            - configMapRef:
+                name: shared-global-config
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

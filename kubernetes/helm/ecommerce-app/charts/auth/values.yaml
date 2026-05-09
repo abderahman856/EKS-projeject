@@ -1,4 +1,4 @@
-env: "development"
+env: "production"
 awsRegion: "us-east-1"
 
 databaseHost: "ecommercemain.c6nao6eycmq2.us-east-1.rds.amazonaws.com"
