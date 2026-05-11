@@ -1,0 +1,24 @@
+dependencies:
+- name: auth
+  repository: file://./charts/auth
+  version: 0.1.0
+- name: cart
+  repository: file://./charts/cart
+  version: 0.1.0
+- name: notification
+  repository: file://./charts/notification
+  version: 0.1.0
+- name: order
+  repository: file://./charts/order
+  version: 0.1.0
+- name: payment
+  repository: file://./charts/payment
+  version: 0.1.0
+- name: product
+  repository: file://./charts/product
+  version: 0.1.0
+- name: frontend
+  repository: file://./charts/frontend
+  version: 0.1.0
+digest: sha256:8e0fd0e98cc21b9646f3dc617eacb039475dd054c968d6ba654a5866ca7cf65c
+generated: "2026-05-11T10:31:03.959756+03:00"
