@@ -15,9 +15,9 @@ secrets:
   jwtSecret: ""
 
 resources:
-  limits:
+  requests:
     cpu: "100m"
     memory: "128Mi"
-  requests:
+  limits:
     cpu: "500m"
     memory: "256Mi"

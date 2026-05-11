@@ -25,3 +25,5 @@ secrets.auto.tfvars
 
 secrets.yaml
 
+*.tgz
+
