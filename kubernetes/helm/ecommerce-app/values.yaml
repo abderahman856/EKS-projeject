@@ -35,13 +35,6 @@ frontend:
     repository: "ecommerce-frontend"
   service:
     port: 80
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
 
 auth:
   replicaCount: 1
