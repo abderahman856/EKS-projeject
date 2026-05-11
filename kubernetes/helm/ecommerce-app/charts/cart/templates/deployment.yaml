@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry | default .Values.global.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.tag }}"
+          image: "{{ .Values.global.repository }}/{{ .Chart.Name }}:{{ .Values.global.tag | default "latest" }}"
           ports:
             - containerPort: {{ .Values.service.port }}
           envFrom:

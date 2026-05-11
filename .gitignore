@@ -23,6 +23,5 @@ services/*/.env
 *.tfvars
 secrets.auto.tfvars
 
-secrets.yaml
-
+values.yaml
 

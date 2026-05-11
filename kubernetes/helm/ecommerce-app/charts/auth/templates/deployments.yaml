@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.global.repository }}/{{ .Chart.Name }}:{{ .Values.global.tag | default "latest" }}"
           ports:
             - containerPort: {{ .Values.service.port }}
           
@@ -30,4 +30,4 @@ spec:
                 name: {{ .Chart.Name }}-secrets
 
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            

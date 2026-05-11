@@ -1,23 +1,23 @@
-env: "production"
-awsRegion: "us-east-1"
-
-databaseHost: "ecommercemain.c6nao6eycmq2.us-east-1.rds.amazonaws.com"
-databasePort: 5432
-
 replicaCount: 1
 
-image: 
-  registry: 723580626973.dkr.ecr.us-east-1.amazonaws.com
-  repository: auth-service
-  tag: latest
-  awsRegion: "us-east-1"
+image:
+  repository: "auth-service"
 
 service:
   type: ClusterIP
-  port: 3000
+  port: 8080
+
+database:
+  name: "auth_db"
 
 secrets:
   dbPassword: "" 
   jwtSecret: ""
 
-Resources: {}
+resources:
+  limits:
+    cpu: "100m"
+    memory: "128Mi"
+  requests:
+    cpu: "500m"
+    memory: "256Mi"

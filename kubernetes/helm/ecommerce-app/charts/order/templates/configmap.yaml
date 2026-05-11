@@ -8,5 +8,5 @@ data:
   NODE_ENV: {{ .Values.env | default .Values.global.env | quote }}
   REGION: {{ .Values.awsRegion | default .Values.global.awsRegion | quote }}
   PORT: {{ .Values.service.port | quote }}
-  DB_HOST: {{ .Values.database.host | quote }}
-  DB_PORT: {{ .Values.database.port | quote }}
+  DB_HOST: {{ .Values.global.database.host | quote }}
+  DB_PORT: {{ .Values.global.database.port | quote }}
