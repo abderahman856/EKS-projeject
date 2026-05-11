@@ -20,18 +20,18 @@ module "rds" {
   vpc_id             = module.vpc.vpc_id
   private_subnet_ids = [module.vpc.private_subnet_1_id, module.vpc.private_subnet_2_id]
   eks_sg_id          = module.eks.cluster_security_group_id
-  
+
   # Ensure these variable names match exactly what we put in variables.tf
-  db_username        = var.db_username
-  dbPassword         = var.dbPassword
-  jwtSecret          = var.jwtSecret # Passing this down in case the module needs it
+  db_username = var.db_username
+  dbPassword  = var.dbPassword
+  jwtSecret   = var.jwtSecret # Passing this down in case the module needs it
 }
 
 module "eks" {
   source           = "./Modules/eks"
   cluster_role_arn = module.iam.eks_cluster_role_arn
   node_role_arn    = module.iam.node_group_role_arn
-  
-  subnet_ids       = [module.vpc.private_subnet_1_id, module.vpc.private_subnet_2_id]
+
+  subnet_ids = [module.vpc.private_subnet_1_id, module.vpc.private_subnet_2_id]
 }
 

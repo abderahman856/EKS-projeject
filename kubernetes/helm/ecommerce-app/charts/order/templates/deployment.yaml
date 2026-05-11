@@ -16,17 +16,21 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry | default .Values.global.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.tag }}"
+          # Fallback logic: Use sub-chart registry or global AWS ECR
+          image: "{{ .Values.global.repository }}/{{ .Chart.Name }}:{{ .Values.global.tag | default "latest" }}"
           ports:
             - containerPort: {{ .Values.service.port }}
+          
           envFrom:
+            # Service-specific settings (e.g., DB Name)
             - configMapRef:
                 name: {{ .Chart.Name }}-config
+            # Global settings (e.g., DB Host/RDS Endpoint)
             - configMapRef:
                 name: shared-global-config
-            {{- if .Values.secrets.create }}
+            # The Global Secret (Passwords and Keys)
             - secretRef:
-                name: {{ .Chart.Name }}-secrets
-            {{- end }}
+                name: ecommerce-global-secrets
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

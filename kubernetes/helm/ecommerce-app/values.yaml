@@ -1,23 +1,32 @@
 # --- GLOBAL SETTINGS ---
 global:
-  registry: 123456789.dkr.ecr.us-east-1.amazonaws.com
-  tag: "latest"
+  # Updated with your actual ECR ID from your logs
+  repository: 723580626973.dkr.ecr.us-east-1.amazonaws.com
+  tag: latest
   awsRegion: "us-east-1"
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 200m
-      memory: 256Mi
 
-# --- EXTERNAL SECRETS CONFIG ---
-# This section is required for your ClusterSecretStore template
-eso:
-  namespace: "external-secrets"
-  serviceAccountName: "external-secrets"
-aws:
-  region: "us-east-1"
+  secrets:
+    authDbPassword: ""
+    orderDbPassword: ""
+    jwtSecret: ""
+    stripeApiKey: ""
+  # --- ADDED: CENTRALIZED INFRASTRUCTURE ---
+  # This ensures all services point to the RDS instance Terraform just created
+  database:
+    host: "ecommercemain.c6nao6eycmq2.us-east-1.rds.amazonaws.com"
+    port: 5432
+  ingress:         # Add this block
+    enabled: false
+  
+  # Shared networking for Service-to-Service communication
+  sharedEnv:
+    LOG_LEVEL: "info"
+    AUTH_API_URL: "http://auth-service:8080"
+    CART_API_URL: "http://cart-service:8081"
+    NOTIFICATION_API_URL: "http://notification-service:8082"
+    ORDER_API_URL: "http://order-service:8083"
+    PAYMENT_API_URL: "http://payment-service:8084"
+    PRODUCT_API_URL: "http://product-service:8085"
 
 # --- INDEPENDENT SERVICE OVERRIDES ---
 frontend:
@@ -37,56 +46,50 @@ frontend:
 auth:
   replicaCount: 1
   image:
-    repository: "ecommerce-auth"
+    repository: "auth-service"
   service:
     type: ClusterIP
     port: 8080
-  # --- ADDED FOR ESO ---
+  # RDS shared secrets
   secrets:
-    rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
+    dbName: "auth_db" # Unique DB name on shared RDS
     jwtSecret: "a-long-random-32-character-string"
 
 cart:
   replicaCount: 1
   image:
-    repository: "ecommerce-cart"
+    repository: "cart-service"
   service:
     port: 8081
-  # --- ADDED FOR ESO ---
   secrets:
-    rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
+    dbName: "cart_db"
 
 notification:
   replicaCount: 1
   image:
-    repository: "ecommerce-notification"
+    repository: "notification-service"
   service:
     port: 8082
 
 order:
   replicaCount: 1
   image:
-    repository: "ecommerce-order"
+    repository: "order-service"
   service:
     port: 8083
-  # --- ADDED FOR ESO ---
   secrets:
-    rdsSecretArn: "arn:aws:secretsmanager:us-east-1:123456789:secret:baashe-db-xyz"
+    dbName: "order_db"
 
 payment:
   replicaCount: 1
   image:
-    repository: "ecommerce-payment"
+    repository: "payment-service"
   service:
     port: 8084
-  resources:
-    requests:
-      cpu: 250m
-      memory: 256Mi
 
 product:
   replicaCount: 1
   image:
-    repository: "ecommerce-product"
+    repository: "product-service"
   service:
     port: 8085

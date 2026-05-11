@@ -9,28 +9,28 @@ appVersion: "1.0.0"
 dependencies:
   - name: auth
     version: 0.1.0
-    repository: "file://../charts/auth"
+    repository: "file://./charts/auth"
   
   - name: cart
     version: 0.1.0
-    repository: "file://../chart/cart"
+    repository: "file://./charts/cart"
   
   - name: notification
     version: 0.1.0
-    repository: "file://../chart/notification"
+    repository: "file://./charts/notification"
 
   - name: order
     version: 0.1.0
-    repository: "file://../chart/order"
+    repository: "file://./charts/order"
 
   - name: payment
     version: 0.1.0
-    repository: "file://../charts/payment"
+    repository: "file://./charts/payment"
 
-  - name: shipping
+  - name: product
     version: 0.1.0
-    repository: "file://../charts/shipping"
+    repository: "file://./charts/product"
     
   - name: frontend
     version: 0.1.0
-    repository: "file://../charts/frontend"
+    repository: "file://./charts/frontend"
