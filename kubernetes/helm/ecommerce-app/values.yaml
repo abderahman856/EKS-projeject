@@ -32,7 +32,7 @@ global:
 frontend:
   replicaCount: 1
   image:
-    repository: "ecommerce-frontend"
+    repository: "frontend-service"
   service:
     port: 80
 
@@ -67,7 +67,7 @@ notification:
 order:
   replicaCount: 1
   image:
-    repository: "order-service"
+    repository: "orders-service"
   service:
     port: 8083
   secrets:

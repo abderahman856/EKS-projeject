@@ -1,7 +1,6 @@
 replicaCount: 1
 
 image:
-  registry: ""
   repository: product-service
   tag: latest
 
@@ -13,8 +12,8 @@ externalApi: "https://dummyjson.com"
 
 resources:
   requests:
+    cpu: "10m"       # Only request 1% of a core
+    memory: "32Mi"   # Very small start-up memory
+  limits:
     cpu: "100m"
     memory: "128Mi"
-  limits:
-    cpu: "500m"
-    memory: "256Mi"

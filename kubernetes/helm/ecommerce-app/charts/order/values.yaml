@@ -1,8 +1,7 @@
 replicaCount: 1
 
 image:
-  registry: ""
-  repository: order-service
+  repository: orders-service
   tag: latest
 
 service:
@@ -15,8 +14,8 @@ secrets:
 
 resources:
   requests:
+    cpu: "10m"       # Only request 1% of a core
+    memory: "32Mi"   # Very small start-up memory
+  limits:
     cpu: "100m"
     memory: "128Mi"
-  limits:
-    cpu: "500m"
-    memory: "256Mi"

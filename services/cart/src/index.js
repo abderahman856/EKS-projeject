@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const { Pool } = require("pg"); // Added Postgres support
 require("dotenv").config();
 
 const app = express();
@@ -11,14 +10,9 @@ app.use(express.json());
 const PORT = 3000; 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_key";
 
-// Database Connection using Environment Variables
-const pool = new Pool({
-  host: process.env.DB_HOST || "cart-db",
-  port: 5432,
-  user: process.env.DB_USER || "postgres",
-  password: process.env.DB_PASSWORD || "postgres", // Pulled from K8s Secret
-  database: process.env.DB_NAME || "cart_db"
-});
+// IN-MEMORY STORAGE: Replaces the Postgres Pool
+// Structure: { userId: [ {product1}, {product2} ] }
+let carts = {};
 
 // Helper to extract User ID from JWT or Header
 const getUserId = (req) => {
@@ -36,55 +30,42 @@ const getUserId = (req) => {
 
 app.get("/health", (_, res) => res.json({ status: "ok", service: "cart" }));
 
-// GET CART: Now queries the Database
-app.get("/cart", async (req, res) => {
+// GET CART: Now reads from memory
+app.get("/cart", (req, res) => {
   const userId = getUserId(req);
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-  try {
-    const { rows } = await pool.query("SELECT * FROM cart_items WHERE user_id = $1", [userId]);
-    return res.json({ items: rows });
-  } catch (err) {
-    return res.status(500).json({ error: "Failed to fetch cart" });
-  }
+  const userCart = carts[userId] || [];
+  return res.json({ items: userCart });
 });
 
-// ADD TO CART: Now persists to the Database
-app.post("/cart/add", async (req, res) => {
+// ADD TO CART: Now updates the memory object
+app.post("/cart/add", (req, res) => {
   const userId = getUserId(req);
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { productId, title, price, quantity = 1 } = req.body;
 
-  try {
-    // Logic: If item exists, update quantity; otherwise, insert new.
-    await pool.query(
-      `INSERT INTO cart_items (user_id, product_id, title, price, quantity) 
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (user_id, product_id) 
-       DO UPDATE SET quantity = cart_items.quantity + $5`,
-      [userId, productId, title, price, quantity]
-    );
+  if (!carts[userId]) carts[userId] = [];
 
-    const { rows } = await pool.query("SELECT * FROM cart_items WHERE user_id = $1", [userId]);
-    return res.json({ items: rows });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to add item" });
+  const existingItem = carts[userId].find(item => item.product_id === productId);
+
+  if (existingItem) {
+    existingItem.quantity += quantity;
+  } else {
+    carts[userId].push({ user_id: userId, product_id: productId, title, price, quantity });
   }
+
+  return res.json({ items: carts[userId] });
 });
 
-// CLEAR CART: Used by the Order service after successful payment
-app.delete("/cart/clear", async (req, res) => {
+// CLEAR CART: Memory cleanup
+app.delete("/cart/clear", (req, res) => {
   const userId = req.headers["x-user-id"];
   if (!userId) return res.status(400).json({ message: "User ID required" });
 
-  try {
-    await pool.query("DELETE FROM cart_items WHERE user_id = $1", [userId]);
-    return res.json({ message: "Cart cleared", items: [] });
-  } catch (err) {
-    return res.status(500).json({ error: "Failed to clear cart" });
-  }
+  carts[userId] = [];
+  return res.json({ message: "Cart cleared", items: [] });
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`Cart service (Stateful) running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Cart service (Stateless) running on port ${PORT}`));
