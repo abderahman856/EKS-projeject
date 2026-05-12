@@ -3,10 +3,10 @@ kind: ConfigMap
 metadata:
   name: {{ .Chart.Name }}-config
   labels:
-    app: {{ .Chart.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/part-of: ecommerce-app
 data:
-  NODE_ENV: {{ .Values.env | default .Values.global.env | quote }}
-  REGION: {{ .Values.awsRegion | default .Values.global.awsRegion | quote }}
+  SERVICE_NAME: {{ .Chart.Name | quote }}
   PORT: {{ .Values.service.port | quote }}
-  DB_HOST: {{ .Values.global.database.host | quote }}
-  DB_PORT: {{ .Values.global.database.port | quote }}
+  HELM_RELEASE_NAME: {{ .Release.Name | quote }}
+  HELM_RELEASE_NAMESPACE: {{ .Release.Namespace | quote }}

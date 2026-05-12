@@ -16,23 +16,25 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.global.repository }}/{{ .Chart.Name }}:{{ .Values.global.tag | default "latest" }}"
+          image: "{{ .Values.global.repository }}/{{ .Values.image.repository }}:{{ .Values.global.tag | default .Values.image.tag | default "latest" }}"
           ports:
             - containerPort: {{ .Values.service.port }}
           
           # This is correct for ESO. 
           # ESO will create a secret named "{{ .Chart.Name }}-secrets" 
           # which contains DB_PASSWORD and JWT_SECRET.
-          envFrom:
+          envFrom:  # <--- Line 32 is likely here or just below
             - configMapRef:
                 name: {{ .Chart.Name }}-config
+            - configMapRef:
+                name: shared-global-config
             - secretRef: 
-                name: {{ .Chart.Name }}-secrets
+                name: auth-secrets
 
           resources:
             requests:
-              cpu: {{ .Values.resources.requests.cpu}}
-              memory: {{ .Values.resources.requests.memory}}
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
             limits:
-              cpu: {{ .Values.resources.limits.cpu}}
-              memory: {{ .Values.resources.limits.memory}}
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}

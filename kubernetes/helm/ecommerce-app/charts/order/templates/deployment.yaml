@@ -17,25 +17,23 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           # Fallback logic: Use sub-chart registry or global AWS ECR
-          image: "{{ .Values.global.repository }}/{{ .Chart.Name }}:{{ .Values.global.tag | default "latest" }}"
+          image: "{{ .Values.global.repository }}/{{ .Values.image.repository }}:{{ .Values.global.tag | default .Values.image.tag | default "latest" }}"
           ports:
             - containerPort: {{ .Values.service.port }}
           
+         # templates/deployment.yaml (for order service)
           envFrom:
-            # Service-specific settings (e.g., DB Name)
             - configMapRef:
                 name: {{ .Chart.Name }}-config
-            # Global settings (e.g., DB Host/RDS Endpoint)
             - configMapRef:
                 name: shared-global-config
-            # The Global Secret (Passwords and Keys)
-            - secretRef:
-                name: ecommerce-global-secrets
+            - secretRef: 
+                name: order-secrets # Only Auth/Order get the Password # Helm renders this as {{ .Chart.Name }}-secrets
 
           resources:
             requests:
-              cpu: {{ .Values.resources.requests.cpu}}
-              memory: {{ .Values.resources.requests.memory}}
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
             limits:
-              cpu: {{ .Values.resources.limits.cpu}}
-              memory: {{ .Values.resources.limits.memory}}
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
