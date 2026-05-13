@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metada:
+    name: {{ .Values.issuer.name }}
+spec:
+    acme:
+        server: https://acme-v02.api.letsencrypt.org/directory
+        emai: {{ .Values.issuer.email }}
+        privateKeySecretRef:
+            name: letsencrypt-prod-account-key
+        solvers:
+            - dns01:
+                cloudlflare:
+                    email: {{ .Values.issuer.cloudlflareEmail }}
+                    apiTokenSecretRef:
+                        name: cloudflare-api-token-secret
+                        key: api-token
