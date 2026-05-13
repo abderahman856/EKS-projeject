@@ -1,18 +1,14 @@
-{{- if .Values.global.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ecommerce-ingress
-  labels:
-    app.kubernetes.io/name: ecommerce-app
+  namespace: default
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
 spec:
-  ingressClassName: {{ .Values.global.ingress.className | quote }}
+  ingressClassName: nginx  # <--- THIS IS CRITICAL
   rules:
-    - host: {{ .Values.global.ingress.host | quote }}
+    - host: baashe.uk
       http:
         paths:
           - path: /
@@ -21,40 +17,39 @@ spec:
               service:
                 name: frontend
                 port:
-                  number: {{ .Values.frontend.service.port }}
+                  number: 80
           - path: /api/auth
             pathType: Prefix
             backend:
               service:
                 name: auth
                 port:
-                  number: {{ .Values.auth.service.port }}
+                  number: 8080
           - path: /api/cart
             pathType: Prefix
             backend:
               service:
                 name: cart
                 port:
-                  number: {{ .Values.cart.service.port }}
+                  number: 8081
           - path: /api/order
             pathType: Prefix
             backend:
               service:
                 name: order
                 port:
-                  number: {{ .Values.order.service.port }}
+                  number: 8082
           - path: /api/payment
             pathType: Prefix
             backend:
               service:
                 name: payment
                 port:
-                  number: {{ .Values.payment.service.port }}
+                  number: 8083
           - path: /api/product
             pathType: Prefix
             backend:
               service:
                 name: product
                 port:
-                  number: {{ .Values.product.service.port }}
-{{- end }}
+                  number: 8084
