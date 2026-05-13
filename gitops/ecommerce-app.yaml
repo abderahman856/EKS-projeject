@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ecommerce-site
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/abderahman856/EKS-projeject.git
+    targetRevision: main
+    path: kubernetes/helm # Pointing to your Helm directory
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
