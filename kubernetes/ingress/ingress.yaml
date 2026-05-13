@@ -5,8 +5,13 @@ metadata:
   namespace: default
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx  # <--- THIS IS CRITICAL
+  tls: 
+    - hosts:
+        - baashe.uk
+      secretName: baashe-uk-tls
   rules:
     - host: baashe.uk
       http:
