@@ -16,10 +16,6 @@ global:
     host: "ecommercemain.c6nao6eycmq2.us-east-1.rds.amazonaws.com"
     port: 5432
   
-  ingress:
-    enabled: true    # <--- Add this!
-    host: baashe.uk
-  
   # Shared networking for Service-to-Service communication
   sharedEnv:
     LOG_LEVEL: "info"
@@ -29,12 +25,6 @@ global:
     ORDER_API_URL: "http://order-service:8083"
     PAYMENT_API_URL: "http://payment-service:8084"
     PRODUCT_API_URL: "http://product-service:8085"
-  
-
-issuer:
-  name: letsencrypt-prod
-  email: abderahmansaeed7@gmail.com
-  cloudlflareEmail: abderahmansaeed7@gmail.com
 
 # --- INDEPENDENT SERVICE OVERRIDES ---
 frontend:
