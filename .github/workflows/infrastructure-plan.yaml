@@ -38,6 +38,16 @@ jobs:
         id: validate
         working-directory: ./terraform
         run: terraform validate -no-color
+
+      - name: Checkov Security Scan
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ./terraform
+          framework: terraform
+          # soft_fail: true # Change to false if you want to block the PR on any security find
+          quiet: false
+          output_format: cli,sarif
       
       - name: terraform plan
         id: plan
