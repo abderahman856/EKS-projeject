@@ -1,0 +1,67 @@
+name: Infrastructure Apply
+
+on:
+  push:
+    branches: [ main ]
+    paths: ['terraform/**']
+
+jobs:
+  tf-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    
+    # Environment variables for AWS Authentication
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: "us-east-1"
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: Terraform Init
+        id: init
+        working-directory: ./terraform
+        run: |
+          echo "Initializing Terraform backend..."
+          terraform init -no-color
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: ./terraform
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        id: apply
+        working-directory: ./terraform
+        run: |
+          echo "=========================================================="
+          echo "STARTING INFRASTRUCTURE DEPLOYMENT"
+          echo "=========================================================="
+          terraform apply -auto-approve -no-color
+        continue-on-error: false # HARD FAIL if the deployment fails
+
+      - name: Job Summary
+        if: always()
+        run: |
+          echo "Infrastructure Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Checkout | Success |" >> $GITHUB_STEP_SUMMARY
+          echo "| Init | ${{ steps.init.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Validate | ${{ steps.validate.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Apply | ${{ steps.apply.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ steps.apply.outcome }}" == "success" ]]; then
+            echo "---" >> $GITHUB_STEP_SUMMARY
+            echo "**Deployment Successful**: Your EKS Infrastructure is now live and updated." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "---" >> $GITHUB_STEP_SUMMARY
+            echo "**Deployment Failed**: Check the logs for AWS provider errors or resource conflicts." >> $GITHUB_STEP_SUMMARY
+          fi
