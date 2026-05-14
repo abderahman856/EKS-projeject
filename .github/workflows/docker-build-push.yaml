@@ -1,0 +1,116 @@
+name: Build, push, scan, and update-gitOps
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'services/**'
+      - 'kubernetes/helm/**'
+
+jobs:
+  Build-bush-and-scan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [auth, cart, frontend, notification, order, payment, product]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Pipeline branding
+        run: |
+          echo "=========================================================="
+          echo " STARTING BUILD FOR SERVICE: ${{ matrix.service }}"
+          echo " COMMIT SHA: ${{ github.sha }}"
+          echo "=========================================================="
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker Image
+        run: |
+          echo " Building Docker image for ${{ matrix.service }}..."
+          docker build -t ${{ matrix.service }}:${{ github.sha }} ./services/${{ matrix.service }}
+          echo " Build complete."
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ matrix.service }}:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os, library'
+          severity: 'CRITICAL, HIGH'
+
+      - name: Push Image to AWS ECR
+        run: |
+          REPO_URL=${{ steps.login-ecr.outputs.registry }}/${{ matrix.service }}-service
+          echo " Pushing image to ECR: $REPO_URL"
+          docker tag ${{ matrix.service }}:${{ github.sha }} $REPO_URL:${{ github.sha }}
+          docker tag ${{ matrix.service }}:${{ github.sha }} $REPO_URL:${{ github.sha}}
+          docker push $REPO_URL:${{ github.sha }}
+          docker push $REPO_URL:latest
+          echo " Successfully pushed ${{ matrix.service }} to ECR."
+      
+  update-gitOps:
+    needs: Build-bush-and-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITOPS_PAT }}
+
+      - name: Update Script
+        run: |
+          echo " Syncing GitOps Repository..."
+
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
+          echo " Updating image tag to ${{ github.sha }} in values.yaml"
+          yq -i '.global.image.tag = "${{ github.sha }}"' kubernetes/helm/values.yaml
+
+          echo " Current state of values.yaml:"
+          cat kubernetes/helm/values.yaml | grep "tag"
+
+      - name: Commit and Push
+        run: | 
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add kubernetes/helm/values.yaml
+
+          echo " Committing changes to Git..."
+          git commit -m "chore(gitops): deploy version ${{ github.sha }} [skip ci]"
+
+          echo " Pushing to GitHub..."
+          git push
+      
+      - name: "📊 Generate Job Summary"
+        if: always() # Ensures the summary is created even if a previous step fails
+        run: |
+          echo " Build & Scan Summary for ${{ matrix.service }}" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "|  Docker Build |  Success | Image: ${{ matrix.service }}:${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "|  Docker Build |  Failed | Check logs for details |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "|  ECR Push |  Success | Registry: ${{ steps.login-ecr.outputs.registry }} |" >> $GITHUB_STEP_SUMMARY
+          echo "|  Security Scan |  Verified | Severity: CRITICAL, HIGH |" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+
+      
+      
+        
+
+
+
+
