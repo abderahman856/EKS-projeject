@@ -28,14 +28,14 @@ global:
 
 # --- INDEPENDENT SERVICE OVERRIDES ---
 frontend:
-  replicaCount: 3
+  replicaCount: 1
   image:
     repository: "frontend-service"
   service:
     port: 80
 
 auth:
-  replicaCount: 2
+  replicaCount: 1
   image:
     repository: "auth-service"
   service:
@@ -63,7 +63,7 @@ notification:
     port: 8082
 
 order:
-  replicaCount: 3
+  replicaCount: 1
   image:
     repository: "orders-service"
   service:
@@ -72,7 +72,7 @@ order:
     dbName: "order_db"
 
 payment:
-  replicaCount: 2
+  replicaCount: 1
   image:
     repository: "payment-service"
   service:

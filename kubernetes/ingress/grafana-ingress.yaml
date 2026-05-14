@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    external-dns.alpha.kubernetes.io/hostname: grafana.baashe.uk
+spec:
+  tls:
+  - hosts:
+    - grafana.baashe.uk
+    secretName: grafana-tls-cert # Cert-Manager saves the cert here
+  rules:
+  - host: grafana.baashe.uk
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-monitoring-grafana
+            port:
+              number: 80
