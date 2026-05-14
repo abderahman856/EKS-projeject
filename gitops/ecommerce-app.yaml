@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/abderahman856/EKS-projeject.git
+    repoURL: https://github.com/abderahman856/EKS-Microservice-Commerce.git
     targetRevision: main
     path: kubernetes/helm # Pointing to your Helm directory
     helm:
