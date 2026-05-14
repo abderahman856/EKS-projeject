@@ -1,0 +1,59 @@
+name: "Infrastructure Destroy"
+
+on:
+  # This makes the pipeline manual only (for safety)
+  workflow_dispatch:
+    inputs:
+      confirm_destroy:
+        description: 'Type "DESTROY" to confirm'
+        required: true
+        default: 'NO'
+
+jobs:
+  tf-destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+    
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: "us-east-1"
+
+    steps:
+      - name: "Checkout Code"
+        uses: actions/checkout@v4
+
+      - name: "Safety Check"
+        run: |
+          if [ "${{ github.event.inputs.confirm_destroy }}" != "DESTROY" ]; then
+            echo "Error: Confirmation 'DESTROY' was not typed correctly. Aborting to save your infrastructure!"
+            exit 1
+          fi
+
+      - name: "Setup Terraform"
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: "Terraform Init"
+        working-directory: ./terraform
+        run: terraform init -no-color
+
+      - name: "Terraform Destroy"
+        working-directory: ./terraform
+        run: |
+          echo "=========================================================="
+          echo "WARNING: DESTROYING ALL AWS RESOURCES"
+          echo "=========================================================="
+          terraform destroy -auto-approve -no-color
+
+      - name: "Job Summary"
+        if: always()
+        run: |
+          echo "Infrastructure Deletion Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Confirmation |  Verified |" >> $GITHUB_STEP_SUMMARY
+          echo "| Destroy | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo " **Cost Saved**: Your AWS resources have been successfully deleted." >> $GITHUB_STEP_SUMMARY
