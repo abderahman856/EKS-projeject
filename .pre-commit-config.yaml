@@ -1,0 +1,28 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace      # Removes extra spaces at the end of lines
+      - id: end-of-file-fixer       # Ensures files end with a newline
+      - id: check-yaml               # Validates YAML syntax (important for Helm/K8s)
+      - id: check-added-large-files  # Prevents pushing huge files (e.g. binaries)
+      - id: detect-private-key       # 🛡️ SECURITY: Scans for private keys accidentally left in code
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.86.0
+    hooks:
+      - id: terraform_fmt            # Formats your Terraform code
+      - id: terraform_validate       # Validates syntax
+      - id: terraform_tflint         # Linter for Terraform (catches cloud-specific errors)
+
+  - repo: https://github.com/bridgecrewio/checkov
+    rev: 3.2.35
+    hooks:
+      - id: checkov                  # 🛡️ SECURITY: Local scan before you push to the pipeline
+        args: [--directory, terraform]
+
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint                 # 🐳 Docker: Validates your Dockerfiles for best practices
