@@ -1,24 +1,16 @@
 # EKS Microservices Commerce Platform
-=======
->>>>>>> addbde4 (removed all the unucessary things - last push)
 
 Production-style cloud-native e-commerce platform built on Kubernetes using a microservices architecture on Amazon EKS.
 
 ## Project Overview
-=======
->>>>>>> addbde4 (removed all the unucessary things - last push)
 
 A production-style cloud-native e-commerce platform built on Kubernetes using a microservices architecture. The platform consists of seven independent services deployed on Amazon EKS and managed through GitOps workflows.
 
 The project focuses on modern DevOps and platform engineering practices including Infrastructure as Code, GitOps, automated CI/CD pipelines, Kubernetes networking, observability, and secure ingress management.
-=======
->>>>>>> addbde4 (removed all the unucessary things - last push)
 
 ## Architecture Diagram
 
 ![Architecture Diagram](docs/Architecture-diagram.gif)
-=======
->>>>>>> addbde4 (removed all the unucessary things - last push)
 
 ## Microservices
 
