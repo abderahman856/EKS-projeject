@@ -158,13 +158,11 @@ If your Postgres username/password differs, update each service `.env` file afte
 
 
 Run in each directory:
->>>>>>> addbde4 (removed all the unucessary things - last push)
 
 ```bash
 kubectl apply -f k8s/
 ```
 
-<<<<<<< HEAD
 ### ArgoCD Deployment
 
 ArgoCD continuously watches the Git repository and automatically synchronizes the Kubernetes cluster state.
