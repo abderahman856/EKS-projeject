@@ -10,7 +10,6 @@ data:
   DB_HOST: {{ .Values.global.database.host | quote }}
   DB_PORT: {{ .Values.global.database.port | quote }}
   LOG_LEVEL: {{ .Values.global.sharedEnv.LOG_LEVEL | quote }}
-  # Service Endpoints
   AUTH_API_URL: {{ .Values.global.sharedEnv.AUTH_API_URL | quote }}
   ORDER_API_URL: {{ .Values.global.sharedEnv.ORDER_API_URL | quote }}
   PAYMENT_API_URL: {{ .Values.global.sharedEnv.PAYMENT_API_URL | quote }}

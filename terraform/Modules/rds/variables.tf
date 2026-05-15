@@ -25,7 +25,6 @@ variable "db_username" {
   default = "dbadmin"
 }
 
-# --- NEW VARIABLES FOR SECRETS ---
 variable "dbPassword" {
   type      = string
   sensitive = true

@@ -1,4 +1,3 @@
-# Create the ECR Repositories
 resource "aws_ecr_repository" "app_repos" {
   for_each             = toset(var.ecr_repo_list)
   
@@ -12,7 +11,6 @@ resource "aws_ecr_repository" "app_repos" {
   tags = var.tags
 }
 
-# Lifecycle Policy: Keeps only the last 10 images (Saves Storage Costs)
 resource "aws_ecr_lifecycle_policy" "repo_policy" {
   for_each = aws_ecr_repository.app_repos
 

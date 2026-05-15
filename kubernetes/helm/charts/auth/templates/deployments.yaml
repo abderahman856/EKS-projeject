@@ -20,9 +20,6 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           
-          # This is correct for ESO. 
-          # ESO will create a secret named "{{ .Chart.Name }}-secrets" 
-          # which contains DB_PASSWORD and JWT_SECRET.
           envFrom:  # <--- Line 32 is likely here or just below
             - configMapRef:
                 name: {{ .Chart.Name }}-config

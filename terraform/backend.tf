@@ -1,7 +1,6 @@
 terraform {
   required_version = ">= 1.0.0"
 
-  # This connects your project to the S3 bucket you just created
   backend "s3" {
     bucket         = "baashe-ecommerce-terraform-state" # The ID from your screenshot
     key            = "dev/eks-cluster/terraform.tfstate"

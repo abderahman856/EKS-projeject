@@ -1,16 +1,22 @@
 # EKS Microservices Commerce Platform
+=======
+>>>>>>> addbde4 (removed all the unucessary things - last push)
 
 Production-style cloud-native e-commerce platform built on Kubernetes using a microservices architecture on Amazon EKS.
 
 ## Project Overview
+=======
+>>>>>>> addbde4 (removed all the unucessary things - last push)
 
 A production-style cloud-native e-commerce platform built on Kubernetes using a microservices architecture. The platform consists of seven independent services deployed on Amazon EKS and managed through GitOps workflows.
 
 The project focuses on modern DevOps and platform engineering practices including Infrastructure as Code, GitOps, automated CI/CD pipelines, Kubernetes networking, observability, and secure ingress management.
+=======
 
 ## Architecture Diagram
 
 ![Architecture Diagram](docs/Architecture-diagram.gif)
+=======
 
 ## Microservices
 
@@ -151,13 +157,23 @@ terraform plan
 terraform apply
 ```
 
+<<<<<<< HEAD
 ### Kubernetes Platform Deployment
+=======
+If your Postgres username/password differs, update each service `.env` file after copying from `.env.example`.
+
+
+Run in each directory:
+>>>>>>> addbde4 (removed all the unucessary things - last push)
 
 ```bash
 kubectl apply -f k8s/
 ```
 
+<<<<<<< HEAD
 ### ArgoCD Deployment
+=======
+>>>>>>> addbde4 (removed all the unucessary things - last push)
 
 ArgoCD continuously watches the Git repository and automatically synchronizes the Kubernetes cluster state.
 
@@ -173,6 +189,7 @@ ArgoCD continuously watches the Git repository and automatically synchronizes th
 * Centralized monitoring and observability
 * Production-style Kubernetes platform architecture
 
+<<<<<<< HEAD
 ## Repository Structure
 
 ```text
@@ -189,15 +206,46 @@ ArgoCD continuously watches the Git repository and automatically synchronizes th
 └── .pre-commit-config.yaml
 ├── README.md
 └── compose.yaml
+=======
+>>>>>>> addbde4 (removed all the unucessary things - last push)
 
 
 ```
 
 ## Future Improvements
 
+<<<<<<< HEAD
 * Canary deployments
 * Blue/Green deployment strategies
 * Centralized logging stack
 * Multi-environment GitOps structure
 * Advanced alerting and notifications
 * Service mesh integration
+=======
+```bash
+./stop-all.sh
+```
+
+
+```bash
+cd services/auth && npm run dev
+cd services/product && npm run dev
+cd services/cart && npm run dev
+cd services/order && npm run dev
+cd services/payment && npm run dev
+cd services/notification && npm run dev
+cd frontend && npm run dev
+```
+
+
+1. Open frontend at `http://localhost:5173`
+2. Sign up and login
+3. Browse products and add items to cart
+4. Open checkout and place order
+5. Payment is simulated in payment service
+6. Notification message is logged in notification service console
+7. View order history in Orders page
+
+
+See `docs/API.md` for all endpoints and payloads.
+>>>>>>> addbde4 (removed all the unucessary things - last push)

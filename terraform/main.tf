@@ -21,7 +21,6 @@ module "rds" {
   private_subnet_ids = [module.vpc.private_subnet_1_id, module.vpc.private_subnet_2_id]
   eks_sg_id          = module.eks.cluster_security_group_id
 
-  # Ensure these variable names match exactly what we put in variables.tf
   db_username = var.db_username
   dbPassword  = var.dbPassword
   jwtSecret   = var.jwtSecret # Passing this down in case the module needs it

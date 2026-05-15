@@ -1,4 +1,3 @@
-# STAGE 1: Build Environment
 FROM node:20-alpine AS build
 WORKDIR /app
 

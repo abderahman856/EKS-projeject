@@ -1,9 +1,7 @@
-# 1. Grafana Configuration
 grafana:
   enabled: true
   adminPassword: "admin" # Change this later!
   
-  # Resource Management (Optimized for t3.micro)
   resources:
     requests:
       memory: "100Mi"
@@ -25,11 +23,9 @@ grafana:
         hosts:
           - grafana.baashe.uk
 
-  # DISABLED EBS REQUIREMENT
   persistence:
     enabled: false
 
-# 2. Prometheus Configuration
 prometheus:
   enabled: true
   ingress:
@@ -47,7 +43,6 @@ prometheus:
 
   prometheusSpec:
     retention: 1d # Lowered retention for memory savings
-    # Resource Management
     resources:
       requests:
         memory: "300Mi"
@@ -56,7 +51,6 @@ prometheus:
         memory: "500Mi"
         cpu: "300m"
     
-    # DISABLED EBS REQUIREMENT - Using Node Memory instead
     storageSpec:
       emptyDir:
         medium: Memory

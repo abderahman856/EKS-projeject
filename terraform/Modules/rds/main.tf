@@ -1,4 +1,3 @@
-# 1. DB Subnet Group
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project_name}-rds-subnet-group"
   subnet_ids = var.private_subnet_ids
@@ -8,7 +7,6 @@ resource "aws_db_subnet_group" "main" {
   }
 }
 
-# 2. RDS Security Group
 resource "aws_security_group" "rds_sg" {
   name        = "${var.project_name}-rds-sg"
   description = "Allow inbound traffic from EKS"
@@ -30,7 +28,6 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-# 3. The RDS Instance
 resource "aws_db_instance" "main" {
   identifier           = var.db_name
   allocated_storage    = 20

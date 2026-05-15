@@ -16,12 +16,10 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          # Fallback logic: Use sub-chart registry or global AWS ECR
           image: "{{ .Values.global.repository }}/{{ .Values.image.repository }}:{{ .Values.global.tag | default .Values.image.tag | default "latest" }}"
           ports:
             - containerPort: {{ .Values.service.port }}
           
-         # templates/deployment.yaml (for order service)
           envFrom:
             - configMapRef:
                 name: {{ .Chart.Name }}-config

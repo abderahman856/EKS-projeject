@@ -1,6 +1,4 @@
-# --- GLOBAL SETTINGS ---
 global:
-  # Updated with your actual ECR ID from your logs
   repository: 723580626973.dkr.ecr.us-east-1.amazonaws.com
   tag: latest
   awsRegion: "us-east-1"
@@ -10,13 +8,10 @@ global:
     orderDbPassword: ""
     jwtSecret: ""
     stripeApiKey: ""
-  # --- ADDED: CENTRALIZED INFRASTRUCTURE ---
-  # This ensures all services point to the RDS instance Terraform just created
   database:
     host: "ecommercemain.c6nao6eycmq2.us-east-1.rds.amazonaws.com"
     port: 5432
   
-  # Shared networking for Service-to-Service communication
   sharedEnv:
     LOG_LEVEL: "info"
     AUTH_API_URL: "http://auth-service:8080"
@@ -26,7 +21,6 @@ global:
     PAYMENT_API_URL: "http://payment-service:8084"
     PRODUCT_API_URL: "http://product-service:8085"
 
-# --- INDEPENDENT SERVICE OVERRIDES ---
 frontend:
   replicaCount: 1
   image:
@@ -41,7 +35,6 @@ auth:
   service:
     type: ClusterIP
     port: 8080
-  # RDS shared secrets
   secrets:
     dbName: "auth_db" # Unique DB name on shared RDS
     jwtSecret: "a-long-random-32-character-string"
