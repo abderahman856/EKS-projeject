@@ -1,100 +1,203 @@
-# DEV-Only Microservices E-Commerce (Localhost)
+# EKS Microservices Commerce Platform
 
-A local development microservices e-commerce system with:
-- React + TailwindCSS frontend
-- Node.js + Express backend services
-- PostgreSQL for Auth and Order services
-- External product API via DummyJSON
+Production-style cloud-native e-commerce platform built on Kubernetes using a microservices architecture on Amazon EKS.
 
-## Architecture
+## Project Overview
 
-- Auth Service: `http://localhost:3001`
-- Product Service: `http://localhost:3002`
-- Cart Service: `http://localhost:3003`
-- Order Service: `http://localhost:3004`
-- Payment Service: `http://localhost:3005`
-- Notification Service: `http://localhost:3006`
-- Frontend (Vite): `http://localhost:5173`
+A production-style cloud-native e-commerce platform built on Kubernetes using a microservices architecture. The platform consists of seven independent services deployed on Amazon EKS and managed through GitOps workflows.
 
-## 1) Prerequisites
+The project focuses on modern DevOps and platform engineering practices including Infrastructure as Code, GitOps, automated CI/CD pipelines, Kubernetes networking, observability, and secure ingress management.
 
-- Node.js 18+
-- npm 9+
-- PostgreSQL running locally
+## Architecture Diagram
 
-## 2) Database Setup
+![Architecture Diagram](docs/Architecture-diagram.gif)
 
-Run:
+## Microservices
+
+| Service                | Responsibility                        |
+| ---------------------- | ------------------------------------- |
+| Frontend Service       | User-facing web application           |
+| Authentication Service | User authentication and authorization |
+| Product Service        | Product catalog management            |
+| Order Service          | Order processing                      |
+| Payment Service        | Payment handling                      |
+| Cart Service           | Shopping cart management              |
+| Notification Service   | Notifications and messaging           |
+
+## Tech Stack
+
+### Cloud & Infrastructure
+
+* Amazon EKS
+* Terraform
+* AWS VPC Networking
+* IAM Roles & Security Groups
+
+### Containers & Orchestration
+
+* Docker
+* Kubernetes
+* Helm Umbrella Charts
+* NGINX Ingress Controller
+
+### GitOps & CI/CD
+
+* GitHub Actions
+* ArgoCD
+* Amazon ECR
+
+### Security & Networking
+
+* Cert-Manager
+* ExternalDNS
+* TLS/HTTPS
+* Cloudflare DNS
+
+### Monitoring & Observability
+
+* Prometheus
+* Grafana
+
+## Infrastructure Summary
+
+The infrastructure is provisioned using Terraform and follows a modular structure.
+
+### Infrastructure Components
+
+* VPC with public and private subnets
+* Amazon EKS cluster
+* Managed worker nodes
+* IAM roles and policies
+* Security groups
+* Internet Gateway and NAT Gateway
+* ECR repositories
+
+### Kubernetes Platform Components
+
+* NGINX Ingress Controller
+* Cert-Manager
+* ExternalDNS
+* ArgoCD
+* Prometheus & Grafana
+
+## CI/CD + GitOps Flow
+
+The platform uses GitHub Actions for CI/CD automation and ArgoCD for GitOps-based deployments.
+
+### CI/CD Pipelines
+
+#### Terraform Pipelines
+
+* Terraform Plan
+* Terraform Apply
+* Terraform Destroy
+
+#### Application Pipelines
+
+* Docker image build
+* Docker image tagging
+* Push images to Amazon ECR
+* Kubernetes deployment updates
+
+### GitOps Workflow
+
+1. Developers push code changes.
+2. GitHub Actions builds and pushes Docker images to Amazon ECR.
+3. Kubernetes manifests and Helm values are updated.
+4. ArgoCD detects Git changes automatically.
+5. ArgoCD synchronizes the cluster state with the desired state stored in Git.
+6. Kubernetes performs rolling updates for the services.
+
+## Monitoring & Observability
+
+The monitoring stack is implemented using Prometheus and Grafana.
+
+### Monitoring Features
+
+* Cluster metrics monitoring
+* Pod and node monitoring
+* CPU and memory usage dashboards
+* Ingress traffic monitoring
+* Kubernetes workload visibility
+
+## Networking & Security
+
+The platform includes automated networking and TLS management.
+
+### Features
+
+* HTTPS with Cert-Manager
+* Automatic DNS record management using ExternalDNS
+* Cloudflare DNS integration
+* NGINX Ingress routing
+* Kubernetes namespace isolation
+
+## How to Deploy
+
+### Prerequisites
+
+* AWS Account
+* Terraform
+* kubectl
+* Helm
+* Docker
+* AWS CLI
+
+### Infrastructure Deployment
 
 ```bash
-psql -U postgres -f database/schema.sql
+terraform init
+terraform plan
+terraform apply
 ```
 
-If your Postgres username/password differs, update each service `.env` file after copying from `.env.example`.
-
-## 3) Install Dependencies
-
-Run in each directory:
+### Kubernetes Platform Deployment
 
 ```bash
-cd services/auth && npm install
-cd ../product && npm install
-cd ../cart && npm install
-cd ../order && npm install
-cd ../payment && npm install
-cd ../notification && npm install
-cd ../../frontend && npm install
+kubectl apply -f k8s/
 ```
 
-## 4) Environment Files
+### ArgoCD Deployment
 
-For each service, create `.env` from `.env.example`:
+ArgoCD continuously watches the Git repository and automatically synchronizes the Kubernetes cluster state.
 
-- `services/auth/.env`
-- `services/product/.env`
-- `services/cart/.env`
-- `services/order/.env`
-- `services/payment/.env`
-- `services/notification/.env`
+## Key Features
 
-Use the same `JWT_SECRET` value in `auth`, `cart`, and `order`.
+* Microservices-based architecture
+* Kubernetes-native deployment model
+* Helm umbrella chart management
+* GitOps workflow using ArgoCD
+* Automated CI/CD pipelines
+* Infrastructure as Code with Terraform
+* Automated HTTPS and DNS management
+* Centralized monitoring and observability
+* Production-style Kubernetes platform architecture
 
-## 5) Run Services
+## Repository Structure
 
-### Option A: one-command scripts (recommended)
+```text
+.
+├── .github/workflows
+├── database
+├── docs
+├── frontend
+├── gitops
+├── kubernetes
+└── services
+├── terraform
+└──.gitignore
+└── .pre-commit-config.yaml
+├── README.md
+└── compose.yaml
 
-```bash
-./start-all.sh
+
 ```
 
-Stop all app services:
+## Future Improvements
 
-```bash
-./stop-all.sh
-```
-
-### Option B: run manually in 7 terminals
-
-```bash
-cd services/auth && npm run dev
-cd services/product && npm run dev
-cd services/cart && npm run dev
-cd services/order && npm run dev
-cd services/payment && npm run dev
-cd services/notification && npm run dev
-cd frontend && npm run dev
-```
-
-## 6) User Flow
-
-1. Open frontend at `http://localhost:5173`
-2. Sign up and login
-3. Browse products and add items to cart
-4. Open checkout and place order
-5. Payment is simulated in payment service
-6. Notification message is logged in notification service console
-7. View order history in Orders page
-
-## API Documentation
-
-See `docs/API.md` for all endpoints and payloads.
+* Canary deployments
+* Blue/Green deployment strategies
+* Centralized logging stack
+* Multi-environment GitOps structure
+* Advanced alerting and notifications
+* Service mesh integration
