@@ -151,9 +151,9 @@ terraform plan
 terraform apply
 ```
 
-<<<<<<< HEAD
+
 ### Kubernetes Platform Deployment
-=======
+
 If your Postgres username/password differs, update each service `.env` file after copying from `.env.example`.
 
 
@@ -166,8 +166,6 @@ kubectl apply -f k8s/
 
 <<<<<<< HEAD
 ### ArgoCD Deployment
-=======
->>>>>>> addbde4 (removed all the unucessary things - last push)
 
 ArgoCD continuously watches the Git repository and automatically synchronizes the Kubernetes cluster state.
 
@@ -183,7 +181,6 @@ ArgoCD continuously watches the Git repository and automatically synchronizes th
 * Centralized monitoring and observability
 * Production-style Kubernetes platform architecture
 
-<<<<<<< HEAD
 ## Repository Structure
 
 ```text
@@ -200,25 +197,17 @@ ArgoCD continuously watches the Git repository and automatically synchronizes th
 └── .pre-commit-config.yaml
 ├── README.md
 └── compose.yaml
-=======
->>>>>>> addbde4 (removed all the unucessary things - last push)
-
 
 ```
 
 ## Future Improvements
 
-<<<<<<< HEAD
 * Canary deployments
 * Blue/Green deployment strategies
 * Centralized logging stack
 * Multi-environment GitOps structure
 * Advanced alerting and notifications
 * Service mesh integration
-=======
-```bash
-./stop-all.sh
-```
 
 
 ```bash
@@ -239,7 +228,3 @@ cd frontend && npm run dev
 5. Payment is simulated in payment service
 6. Notification message is logged in notification service console
 7. View order history in Orders page
-
-
-See `docs/API.md` for all endpoints and payloads.
->>>>>>> addbde4 (removed all the unucessary things - last push)
